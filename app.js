@@ -18,7 +18,6 @@ app.use(express.json());
 app.use(cors({ origin: ["http://localhost:3000"], credentials: true }));
 
 app.post("/", (req, res) => {
-  let isValid = false;
   try {
     const { email, password } = req.body;
     if (!email || !password) {
@@ -31,24 +30,31 @@ app.post("/", (req, res) => {
     console.log(e);
   }
 
-  isValid = true;
-  io.use((socket, next) => {
-    if (!isValid) socket.disconnect(true);
-
-    return next();
-  });
-
   io.on("connection", (socket) => {
     console.log("a user connected ", socket.id);
+
     socket.on("disconnect", () => {
       console.log(socket.id, " disconnected");
     });
-    socket.on("chat", (msg) => {
-      socket.broadcast.emit("my message", msg);
+
+    socket.on("chat message", (msg) => {
+      socket.emit("my message", msg);
     });
-    // io.emit("chat message", socket.id);
   });
+
   res.status(200).json({ status: "Success" });
 });
+
+// io.on("connection", (socket) => {
+//   console.log("a user connected ", socket.id);
+
+//   socket.on("disconnect", () => {
+//     console.log(socket.id, " disconnected");
+//   });
+
+//   socket.on("chat message", (msg) => {
+//     socket.broadcast.emit("my_message", msg);
+//   });
+// });
 
 module.exports = server;
