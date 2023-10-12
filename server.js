@@ -1,5 +1,11 @@
+const mongoose = require("mongoose");
 const server = require("./app");
 
-server.listen(5000, () => {
+mongoose
+  .connect(process.env.DATABASE)
+  .then(() => console.log("DB connection successful"))
+  .catch((e) => console.log("DB connection failed"));
+
+server.listen(process.env.PORT, () => {
   console.log("listening on *:5000");
 });

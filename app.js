@@ -3,7 +3,12 @@ const http = require("http");
 const { Server } = require("socket.io");
 const cors = require("cors");
 
-// const AuthRouter = require("./Routes/authRouter");
+const morgan = require("morgan");
+const dotenv = require("dotenv");
+const cookieParser = require("cookie-parser");
+
+const AuthRouter = require("./Routes/authRouter");
+const errorController = require("./Controllers/errorController");
 
 const app = express();
 const server = http.createServer(app);
@@ -15,46 +20,37 @@ const io = new Server(server, {
 });
 
 app.use(express.json());
-app.use(cors({ origin: ["http://localhost:3000"], credentials: true }));
+app.use(
+  cors({
+    origin: ["http://localhost:3000", "http://127.0.0.1:5500"],
+    credentials: true,
+  })
+);
+app.use(morgan("dev"));
+app.use(cookieParser());
+dotenv.config({ path: "./config.env" });
 
-app.post("/", (req, res) => {
-  try {
-    const { email, password } = req.body;
-    if (!email || !password) {
-      res.status(403).json({
-        status: "Fail",
-        message: "Enter your credentials",
-      });
-    }
-  } catch (e) {
-    console.log(e);
-  }
+app.use("/api/v1/", AuthRouter);
 
-  io.on("connection", (socket) => {
-    console.log("a user connected ", socket.id);
+io.on("connection", (socket) => {
+  console.log("a user connected ", socket.id);
 
-    socket.on("disconnect", () => {
-      console.log(socket.id, " disconnected");
-    });
-
-    socket.on("chat message", (msg) => {
-      socket.emit("my message", msg);
-    });
+  socket.on("disconnect", () => {
+    console.log(socket.id, " disconnected");
   });
 
-  res.status(200).json({ status: "Success" });
+  socket.on("chat message", (msg) => {
+    socket.broadcast.emit("my_message", msg);
+  });
 });
 
-// io.on("connection", (socket) => {
-//   console.log("a user connected ", socket.id);
+app.use(errorController);
 
-//   socket.on("disconnect", () => {
-//     console.log(socket.id, " disconnected");
-//   });
-
-//   socket.on("chat message", (msg) => {
-//     socket.broadcast.emit("my_message", msg);
-//   });
-// });
+app.all("*", (req, res) => {
+  res.status(404).json({
+    status: "Fail",
+    message: `Cant find ${req.originalUrl} on this server`,
+  });
+});
 
 module.exports = server;
