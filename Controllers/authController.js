@@ -68,12 +68,19 @@ exports.protect = catchAsync(async (req, res, next) => {
   if (!user) return next(new AppError(401, "Not Logged in!"));
 
   req.user = user;
-
   next();
 });
 
 exports.me = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: "Success",
+    user: req.user,
   });
 });
+
+exports.silly = (req, res, next) => {
+  // res.json({
+  //   status: "Success",
+  // });
+  next();
+};
