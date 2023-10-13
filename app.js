@@ -10,6 +10,11 @@ const cookieParser = require("cookie-parser");
 const AuthRouter = require("./Routes/authRouter");
 const errorController = require("./Controllers/errorController");
 
+const {
+  socketAuth,
+  socketConnection,
+} = require("./Controllers/socketController");
+
 const app = express();
 const server = http.createServer(app);
 
@@ -32,17 +37,9 @@ dotenv.config({ path: "./config.env" });
 
 app.use("/api/v1/", AuthRouter);
 
-io.on("connection", (socket) => {
-  console.log("a user connected ", socket.id);
+io.use(socketAuth);
 
-  socket.on("disconnect", () => {
-    console.log(socket.id, " disconnected");
-  });
-
-  socket.on("chat message", (msg) => {
-    socket.broadcast.emit("my_message", msg);
-  });
-});
+io.on("connection", socketConnection);
 
 app.use(errorController);
 
