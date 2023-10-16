@@ -4,18 +4,6 @@ const User = require("../Model/userModel");
 const AppError = require("../Utilities/appErrors");
 const { promisify } = require("util");
 
-exports.socketConnection = (socket) => {
-  console.log("a user connected ", socket.id);
-
-  socket.on("disconnect", () => {
-    console.log(socket.id, " disconnected");
-  });
-
-  socket.on("chat message", (msg) => {
-    socket.broadcast.emit("my_message", msg);
-  });
-};
-
 exports.socketAuth = catchAsync(async (socket, next) => {
   const cookie = socket.handshake.auth.token;
   if (!cookie) {
@@ -34,3 +22,22 @@ exports.socketAuth = catchAsync(async (socket, next) => {
   socket.user = user;
   next();
 });
+
+exports.socketConnection = (socket) => {
+  let connectedUsers = {};
+  console.log("a user connected ", socket.id);
+
+  const userEmail = socket.user.email;
+  connectedUsers[userEmail] = socket.id;
+
+  console.log(connectedUsers);
+
+  socket.on("disconnect", () => {
+    console.log(socket.id, " disconnected");
+  });
+
+  socket.on("chat message", (msg, room = null) => {
+    if (!room) socket.broadcast.emit("my_message", msg);
+    else socket.to(room).emit("my_message", msg);
+  });
+};
