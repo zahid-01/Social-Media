@@ -23,21 +23,20 @@ exports.socketAuth = catchAsync(async (socket, next) => {
   next();
 });
 
+let connectedUsers = {};
+
 exports.socketConnection = (socket) => {
-  let connectedUsers = {};
   console.log("a user connected ", socket.id);
 
-  const userEmail = socket.user.email;
-  connectedUsers[userEmail] = socket.id;
-
-  console.log(connectedUsers);
+  if (!connectedUsers[socket.user.email])
+    connectedUsers[socket.user.email] = socket;
 
   socket.on("disconnect", () => {
     console.log(socket.id, " disconnected");
   });
 
-  socket.on("chat message", (msg, room = null) => {
-    if (!room) socket.broadcast.emit("my_message", msg);
-    else socket.to(room).emit("my_message", msg);
+  socket.on("private_message", (msg, friend) => {
+    if (connectedUsers[friend])
+      connectedUsers[friend].emit("privateMessage", msg);
   });
 };
