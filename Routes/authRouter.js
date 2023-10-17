@@ -13,6 +13,6 @@ AuthRouter.post("/login", login);
 AuthRouter.get("/silly", silly);
 
 AuthRouter.use(protect);
-AuthRouter.route("/users").get(me);
+AuthRouter.route("/me").get(me);
 
 module.exports = AuthRouter;

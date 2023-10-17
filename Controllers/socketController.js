@@ -4,6 +4,46 @@ const User = require("../Model/userModel");
 const AppError = require("../Utilities/appErrors");
 const { promisify } = require("util");
 
+const saveMessageToUsers = async (recepient, senderId, message) => {
+  const to = await User.findOne({ email: recepient });
+  const from = await User.findById(senderId);
+
+  if (!to) return new AppError(400, "No user exists");
+
+  const chatHistory = to.chatHistory.find((chat) =>
+    chat.userId.equals(senderId)
+  );
+  const chatHistoryRecepient = from.chatHistory.find((chat) =>
+    chat.userId.equals(recepient)
+  );
+
+  if (chatHistory) {
+    chatHistory.messages.push({ sender: senderId, message });
+  } else {
+    to.chatHistory.push({
+      userId: senderId,
+      messages: [{ sender: senderId, message }],
+    });
+  }
+
+  if (chatHistoryRecepient) {
+    chatHistoryRecepient.messages.push({ sender: senderId, message });
+  } else {
+    from.chatHistory.push({
+      userId: to.id,
+      messages: [
+        {
+          sender: senderId,
+          message,
+        },
+      ],
+    });
+  }
+
+  to.save();
+  from.save();
+};
+
 exports.socketAuth = catchAsync(async (socket, next) => {
   const cookie = socket.handshake.auth.token;
   if (!cookie) {
@@ -35,8 +75,11 @@ exports.socketConnection = (socket) => {
     console.log(socket.id, " disconnected");
   });
 
-  socket.on("private_message", (msg, friend) => {
-    if (connectedUsers[friend])
+  socket.on("private_message", async (msg, friend) => {
+    const id = socket.user.id;
+    if (connectedUsers[friend]) {
+      await saveMessageToUsers(friend, id, msg);
       connectedUsers[friend].emit("privateMessage", msg);
+    }
   });
 };

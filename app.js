@@ -8,6 +8,7 @@ const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
 
 const AuthRouter = require("./Routes/authRouter");
+const UserRouter = require("./Routes/userRoutes");
 const errorController = require("./Controllers/errorController");
 
 const {
@@ -36,6 +37,7 @@ app.use(cookieParser());
 dotenv.config({ path: "./config.env" });
 
 app.use("/api/v1/", AuthRouter);
+app.use("/api/v1/users", UserRouter);
 
 io.use(socketAuth);
 
