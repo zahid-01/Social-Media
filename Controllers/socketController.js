@@ -14,7 +14,7 @@ const saveMessageToUsers = async (recepient, senderId, message) => {
     chat.userId.equals(senderId)
   );
   const chatHistoryRecepient = from.chatHistory.find((chat) =>
-    chat.userId.equals(recepient)
+    chat.userId.equals(to.id)
   );
 
   if (chatHistory) {
