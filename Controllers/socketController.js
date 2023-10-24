@@ -76,6 +76,7 @@ exports.socketConnection = (socket) => {
   });
 
   socket.on("private_message", async (msg, friend) => {
+    console.log(msg);
     const id = socket.user.id;
     if (connectedUsers[friend]) {
       await saveMessageToUsers(friend, id, msg);

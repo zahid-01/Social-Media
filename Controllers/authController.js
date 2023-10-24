@@ -79,6 +79,21 @@ exports.me = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.isLoggedIn = catchAsync(async (req, res, next) => {
+  const token = req.cookies.jwt;
+
+  if (!token) return next(new AppError(401, "Not Logged in!"));
+
+  const { id } = jwt.verify(token, process.env.JWT_SECRET);
+
+  const user = await User.findById(id);
+
+  res.status(200).json({
+    status: "Success",
+    user,
+  });
+});
+
 exports.silly = (req, res, next) => {
   // res.json({
   //   status: "Success",
