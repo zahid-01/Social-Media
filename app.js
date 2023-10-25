@@ -16,6 +16,7 @@ const {
   socketConnection,
 } = require("./Controllers/socketController");
 const PostRouter = require("./Routes/postRouter");
+const FollowerRouter = require("./Routes/followerRouter");
 
 const app = express();
 const server = http.createServer(app);
@@ -40,6 +41,7 @@ dotenv.config({ path: "./config.env" });
 app.use("/api/v1/", AuthRouter);
 app.use("/api/v1/users", UserRouter);
 app.use("/api/v1/userPost", PostRouter);
+app.use("/api/v1/followers", FollowerRouter);
 
 io.use(socketAuth);
 

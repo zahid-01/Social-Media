@@ -16,6 +16,26 @@ const userSchema = mongoose.Schema({
   },
   password: String,
   bio: String,
+  requests: [
+    {
+      userId: {
+        type: mongoose.Schema.ObjectId,
+        ref: "users",
+      },
+      time: {
+        type: Date,
+        default: Date.now(),
+      },
+    },
+  ],
+  sentRequests: [
+    {
+      userId: {
+        type: mongoose.Schema.ObjectId,
+        ref: "users",
+      },
+    },
+  ],
   friends: [],
   posts: [],
   likedPosts: [],
@@ -29,6 +49,14 @@ const userSchema = mongoose.Schema({
           timeStamp: { type: Date, default: Date.now() },
         },
       ],
+    },
+  ],
+  blockedList: [
+    {
+      user: {
+        type: mongoose.Schema.ObjectId,
+        ref: "users",
+      },
     },
   ],
 });
