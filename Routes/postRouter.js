@@ -5,6 +5,7 @@ const {
   getMyPosts,
   deletePost,
   likeUnlikePost,
+  addComment,
 } = require("../Controllers/postController");
 
 const PostRouter = require("express").Router();
@@ -14,6 +15,7 @@ PostRouter.route("/").post(createPost).get(getMyPosts);
 PostRouter.route("/:id")
   .patch(updatePost)
   .delete(deletePost)
-  .put(likeUnlikePost);
+  .put(likeUnlikePost)
+  .post(addComment);
 
 module.exports = PostRouter;

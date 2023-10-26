@@ -23,7 +23,7 @@ const postSchema = mongoose.Schema({
   postComments: [
     {
       user: { type: mongoose.Schema.ObjectId, ref: "users" },
-      commment: { type: String, required: [true, "Provide comment text"] },
+      comment: { type: String, required: [true, "Provide comment text"] },
     },
   ],
 });

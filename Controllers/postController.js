@@ -76,3 +76,22 @@ exports.likeUnlikePost = catchAsync(async (req, res, next) => {
     message: `${action} the post successfully`,
   });
 });
+
+exports.addComment = catchAsync(async (req, res, next) => {
+  const { id } = req.user;
+  const postId = req.params.id;
+  const comment = req.body.comment;
+  if (!comment) return next(new AppError(400, "Enter post id and comment"));
+  const post = await Posts.findByIdAndUpdate(
+    postId,
+    {
+      $push: { postComments: { user: id, comment } },
+    },
+    { new: true }
+  );
+
+  res.status(200).json({
+    status: "Success",
+    post: post.postComments,
+  });
+});
