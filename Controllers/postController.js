@@ -55,3 +55,24 @@ exports.deletePost = catchAsync(async (req, res) => {
     status: "Success",
   });
 });
+
+exports.likeUnlikePost = catchAsync(async (req, res, next) => {
+  const { id } = req.params;
+  const post = await Posts.findById(id);
+
+  let action = "";
+  if (post.postLikes.includes(req.user.id)) {
+    post.postLikes = post.postLikes.filter((like) => like != req.user.id);
+    action = "Unliked";
+  } else {
+    post.postLikes.push(req.user.id);
+    action = "Liked";
+  }
+
+  post.save();
+
+  res.status(200).json({
+    status: "Success",
+    message: `${action} the post successfully`,
+  });
+});

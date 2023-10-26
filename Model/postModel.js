@@ -14,6 +14,18 @@ const postSchema = mongoose.Schema({
     required: [true, "Provide post text"],
   },
   postImage: String,
+  postLikes: [
+    {
+      type: mongoose.Schema.ObjectId,
+      ref: "users",
+    },
+  ],
+  postComments: [
+    {
+      user: { type: mongoose.Schema.ObjectId, ref: "users" },
+      commment: { type: String, required: [true, "Provide comment text"] },
+    },
+  ],
 });
 
 const Posts = new mongoose.model("posts", postSchema);
