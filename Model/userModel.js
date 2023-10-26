@@ -36,8 +36,7 @@ const userSchema = mongoose.Schema({
       },
     },
   ],
-  friends: [],
-  posts: [],
+  friends: [{ type: mongoose.Schema.ObjectId, ref: "users" }],
   likedPosts: [],
   chatHistory: [
     {
@@ -59,6 +58,7 @@ const userSchema = mongoose.Schema({
       },
     },
   ],
+  notifications: [String],
 });
 
 userSchema.pre("save", async function (next) {

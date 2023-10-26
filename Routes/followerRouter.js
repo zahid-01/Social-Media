@@ -1,8 +1,17 @@
 const FollowerRouter = require("express").Router();
 const { protect } = require("../Controllers/authController");
-const { addFriend } = require("../Controllers/followersController");
+const {
+  addFriend,
+  acceptRequest,
+  removeFriend,
+} = require("../Controllers/followersController");
 
 FollowerRouter.use(protect);
-FollowerRouter.route("/").post(addFriend);
+//Remove follower
+FollowerRouter.delete("/:id", removeFriend);
+//Send request
+FollowerRouter.post("/request", addFriend);
+//Accept request
+FollowerRouter.post("/", acceptRequest);
 
 module.exports = FollowerRouter;

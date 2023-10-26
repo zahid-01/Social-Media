@@ -41,7 +41,7 @@ dotenv.config({ path: "./config.env" });
 app.use("/api/v1/", AuthRouter);
 app.use("/api/v1/users", UserRouter);
 app.use("/api/v1/userPost", PostRouter);
-app.use("/api/v1/followers", FollowerRouter);
+app.use("/api/v1/follow", FollowerRouter);
 
 io.use(socketAuth);
 
