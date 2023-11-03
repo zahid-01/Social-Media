@@ -94,9 +94,18 @@ exports.isLoggedIn = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.silly = (req, res, next) => {
-  // res.json({
-  //   status: "Success",
-  // });
-  next();
+exports.logout = (req, res, next) => {
+  const cookieOptions = {
+    expires: new Date(Date.now() + 5 * 1000),
+    secure: true,
+    httpOnly: true,
+    sameSite: "none",
+  };
+
+  res.cookie("jwt", "Logout", cookieOptions);
+
+  res.status(200).json({
+    status: "Success",
+    message: "Logged out successfully",
+  });
 };
