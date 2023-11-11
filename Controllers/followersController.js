@@ -34,21 +34,26 @@ exports.acceptRequest = catchAsync(async (req, res, next) => {
 
   if (!sender) return next(new AppError(401, "User no longer exists"));
 
-  //Get the id of friend to be added and update requests array
+  //Get the id of friend to be added
   let addFriend;
   const updatedRequests = user.requests.filter((request) => {
     if (request.id === req.body.id) addFriend = request.id;
     if (request.id != req.body.id) return request.id;
   });
 
+  //Chek if friend request exists
+  if (!addFriend)
+    return next(new AppError("404", "Cannot process as request not found"));
+
   //Update Friends array of both users
   req.user.friends.push(addFriend);
   sender.friends.push(user);
 
-  //Update sender sent requests array
+  //Update sender sent requests array and users received requests
   sender.sentRequests = sender.sentRequests.filter(
     (request) => request.id != user.id
   );
+  user.requests = updatedRequests;
 
   //send notification to sender
   sender.notifications.push(

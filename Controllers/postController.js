@@ -95,3 +95,18 @@ exports.addComment = catchAsync(async (req, res, next) => {
     post: post.postComments,
   });
 });
+
+exports.getMyFeed = catchAsync(async (req, res, next) => {
+  const { friends } = req.user;
+
+  const posts = await Posts.find({ userId: { $in: friends } })
+    .sort({
+      date: 1,
+    })
+    .populate("userId", "name");
+
+  res.status(200).json({
+    status: "Success",
+    posts,
+  });
+});
