@@ -101,7 +101,7 @@ exports.getMyFeed = catchAsync(async (req, res, next) => {
 
   const posts = await Posts.find({ userId: { $in: friends } })
     .sort({
-      date: 1,
+      date: -1,
     })
     .populate("userId", "name");
 
